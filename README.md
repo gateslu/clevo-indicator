@@ -5,9 +5,13 @@ This program is an Ubuntu indicator to control the fan of Clevo laptops, using r
 
 It shows the CPU temperature on the left and the GPU temperature on the right, and a menu for manual control.
 
+支持蓝天clevo-x370，我的笔记本型号是七彩虹将星x17 pro max，目前支持cpu和gpu的自动风扇调速，并且可以通过配置文件自由组合
+
 ![Clevo Indicator Screen](http://i.imgur.com/ucwWxLq.png)
 
-
+```
+sudo chown root clevo-indicator  && sudo chgrp adm clevo-indicator && sudo chmod 4750 clevo-indicator
+```
 
 For command-line, use *-h* to display help, or a number representing percentage of fan duty to control the fan (from 40% to 100%).
 
@@ -16,18 +20,72 @@ Build and Install
 -----------------
 For Ubuntu 22.04:
 ```shell
-sudo apt install libayatana-appindicator3-dev libgtk-3-dev
+sudo apt install libayatana-appindicator3-dev libgtk-3-dev install nlohmann-json3-dev
 git clone https://github.com/grizzlei/clevo-indicator.git
 cd clevo-indicator
-make install
+mkdir cmake-build-release
+cd cmake-build-release
+cmake .. -DCMAKE_BUILD_TYPE=Release
+cmake --build .
+sudo chown root clevo-indicator  && sudo chgrp adm clevo-indicator && sudo chmod 4750 clevo-indicator
+sudo rm -rf /usr/local/bin/clevo-indicator
+sudo make install
+sudo chown root /usr/local/bin/clevo-indicator && sudo chgrp adm /usr/local/bin/clevo-indicator && sudo chmod 4750 /usr/local/bin/clevo-indicator
 ```
 For older Ubuntu versions:
 ```shell
-sudo apt-get install libappindicator3-dev libgtk-3-dev
+sudo apt-get install libappindicator3-dev libgtk-3-dev install nlohmann-json3-dev
 git clone https://github.com/SkyLandTW/clevo-indicator.git
 cd clevo-indicator
-make install
+mkdir cmake-build-release
+cd cmake-build-release
+cmake .. -DCMAKE_BUILD_TYPE=Release
+cmake --build .
+sudo chown root clevo-indicator && sudo chgrp adm clevo-indicator && sudo chmod 4750 clevo-indicator
+sudo rm -rf /usr/local/bin/clevo-indicator
+sudo make install
+sudo chown root /usr/local/bin/clevo-indicator && sudo chgrp adm /usr/local/bin/clevo-indicator && sudo chmod 4750 /usr/local/bin/clevo-indicator
 ```
+
+---
+
+### Manual Fan Control Configuration
+
+If you want to manually set custom fan control rules, create a configuration file at `/etc/fan_config.json` with the following content:
+
+```json
+{
+    "cpu": [
+        { "temp": 10, "duty": 0 },
+        { "temp": 20, "duty": 20 },
+        { "temp": 30, "duty": 25 },
+        { "temp": 40, "duty": 35 },
+        { "temp": 50, "duty": 45 },
+        { "temp": 60, "duty": 60 },
+        { "temp": 70, "duty": 75 },
+        { "temp": 80, "duty": 85 },
+        { "temp": 90, "duty": 100 }
+    ],
+    "gpu": [
+        { "temp": 10, "duty": 0 },
+        { "temp": 20, "duty": 20 },
+        { "temp": 30, "duty": 25 },
+        { "temp": 40, "duty": 30 },
+        { "temp": 50, "duty": 35 },
+        { "temp": 60, "duty": 45 },
+        { "temp": 70, "duty": 60 },
+        { "temp": 80, "duty": 75 },
+        { "temp": 90, "duty": 90 },
+        { "temp": 95, "duty": 100 }
+    ]
+}
+```
+
+Each entry defines a mapping between temperature (`temp`) and the corresponding fan duty cycle (`duty`, in percentage).  
+The system will adjust the CPU and GPU fan speeds based on the temperature according to these mappings.
+
+Make sure that `/etc/fan_config.json` is readable by the program.
+---
 
 
 Notes
