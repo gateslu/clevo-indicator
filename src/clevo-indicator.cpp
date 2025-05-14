@@ -485,7 +485,7 @@ static int main_ec_worker(void) {
             }
         }
         //
-        usleep(200 * 1000);
+        usleep(3000 * 1000);
     }
     printf("worker quit\n");
     return EXIT_SUCCESS;
